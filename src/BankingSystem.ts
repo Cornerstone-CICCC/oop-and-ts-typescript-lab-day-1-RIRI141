@@ -7,8 +7,8 @@
 // 6. Implement a function `closeAccount` that removes an account from the array and returns a confirmation string.
 
 enum TransactionType {
-  Deposit,
-  Withdraw
+  Deposit = "Deposit",
+  Withdraw = "Withdraw"
 }
 
 type Transaction = {
@@ -26,29 +26,61 @@ type BankAccount = {
   transactions: Transaction[]
 }
 
-const accounts: BankAccount[] = [];
+let accounts: BankAccount[] = [];
 
-function createAccount(accountNo, firstname, lastname, initialDeposit, isActive = true) {
+function createAccount(accountNo: number, firstname: string, lastname: string, initialDeposit: number, isActive = true) {
+  let newAccount: BankAccount = {
+    accountNo,
+    firstname,
+    lastname,
+    balance: initialDeposit,
+    isActive,
+    transactions: []
+  };
 
+  accounts.push(newAccount);
+  return newAccount;
 }
 
-function processTransaction(accountNo, amount, transactionType) {
 
+function processTransaction(accountNo: number, amount: number, transactionType: TransactionType) {
+  let account = accounts.find(acc => acc.accountNo === acc.accountNo);
+
+  if (!account) return "Error! Account not found";
+
+  if (!account.isActive) return "Error! Account is not Activate";
+  
+  if (transactionType === TransactionType.Withdraw && account.balance < amount) return "Insufficient funds for withdrawal";
+
+  account.transactions.push({ accountNo, amount, type: transactionType });
+  account.balance += transactionType === TransactionType.Deposit ? amount : -amount;
+  return `${amount} ${transactionType === TransactionType.Deposit ? 'deposited into' : 'withdrawn from'} account number ${accountNo}`;
 }
 
-function getBalance(accountNo) {
+function getBalance(accountNo: number) {
+  let account = accounts.find(acc => acc.accountNo === accountNo);
+ 
 
+  return account ? account.balance : "Account not found";
 }
 
-function getTransactionHistory(accountNo) {
-
+function getTransactionHistory(accountNo: number) {
+  let account = accounts.find(acc => acc.accountNo === accountNo);
+  return account ? account.transactions : "Account not found";
 }
 
-function checkActiveStatus(accountNo) {
-
+function checkActiveStatus(accountNo: number) {
+  let account = accounts.find(acc => acc.accountNo === accountNo);
+  return account ? account.isActive : "Account not found";
 }
 
-function closeAccount(accountNo) {
+function closeAccount(accountNo: number) {
+  let account = accounts.find(acc => acc.accountNo === accountNo);
+
+  if (!account) return "Error! Account not found";
+
+  return `Account ${accountNo} closed`
+
 
 }
 
